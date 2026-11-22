@@ -1,0 +1,52 @@
+# ==============================================================================
+# AppAnotaciones — .gitignore (Solo código fuente de la app, sin binarios ni datos privados)
+# ==============================================================================
+
+# --- Documentación interna y bitácoras privadas ---
+docs/
+
+# --- Rust ---
+rust-core/target/
+**/target/
+**/*.rs.bk
+rust-core/Cargo.lock.bak
+
+# --- Binarios nativos compilados (.so se regeneran con scripts/build-rust-android.ps1) ---
+android-app/app/src/main/jniLibs/
+*.so
+
+# --- Android / Gradle ---
+android-app/.gradle/
+**/.gradle/
+**/build/
+android-app/local.properties
+local.properties
+*.keystore
+*.jks
+*.apk
+*.aab
+*.ap_
+*.dex
+.idea/
+*.iml
+captures/
+.cxx/
+.externalNativeBuild/
+android-app/app/release/
+
+# --- Bases de datos temporales y archivos locales ---
+*.db
+*.db-wal
+*.db-shm
+*.db-info
+*.sqlite
+*.sqlite3
+
+# --- Sistema operativo / Editores ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.vscode/

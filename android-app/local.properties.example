@@ -1,0 +1,6 @@
+# Copia este archivo a android-app/local.properties (ignorado por Git).
+# Configura la ruta de tu Android SDK y opcionalmente tus credenciales de Turso.
+# Si TURSO_DATABASE_URL y TURSO_AUTH_TOKEN quedan vacios, la app funciona 100% offline/local.
+# sdk.dir=C:/Users/TU_USUARIO/AppData/Local/Android/Sdk
+TURSO_DATABASE_URL=
+TURSO_AUTH_TOKEN=
