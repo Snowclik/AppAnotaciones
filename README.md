@@ -7,6 +7,14 @@
   <a href="https://github.com/Snowclik/AppAnotaciones/releases/latest/download/AppAnotaciones-v1.0.0.apk"><img src="https://img.shields.io/badge/Descargar_APK-v1.0.0-0B1221?style=for-the-badge&amp;logo=android&amp;logoColor=38BDF8" alt="Descargar APK v1.0.0" /></a>&nbsp;<img src="https://img.shields.io/badge/Android-8.0%2B_(API_26)-0B1221?style=for-the-badge&amp;logo=googleplay&amp;logoColor=A78BFA" alt="Android 8.0+" />&nbsp;<img src="https://img.shields.io/badge/Core-Rust_%2B_libSQL-0B1221?style=for-the-badge&amp;logo=rust&amp;logoColor=38BDF8" alt="Rust + libSQL" />&nbsp;<img src="https://img.shields.io/badge/UI-Material_3_Expressive-0B1221?style=for-the-badge&amp;logo=materialdesign&amp;logoColor=A78BFA" alt="Material 3 Expressive" />
 </p>
 
+<p align="center">
+  <a href="#-descarga-directa-android">Descarga</a> · <a href="#-sobre-la-aplicación">Qué hace</a> · <a href="#-características-principales">Características</a> · <a href="#-stack--arquitectura">Arquitectura</a> · <a href="#-compilar-desde-el-código-fuente">Compilación</a>
+</p>
+
+---
+
+> **¿Eres un agente de IA (Claude, Codex, Gemini u otro)?** Antes de tocar nada, lee [AGENTS.md](./AGENTS.md): cómo se trabaja en este repo, la arquitectura Rust + UniFFI + Android, las protecciones que no se rompen, las trampas conocidas y el flujo de compilación.
+
 ---
 
 ### ✦ Descarga Directa (Android)
