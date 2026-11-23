@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Snowclik/AppAnotaciones/releases/latest/download/AppAnotaciones-v1.0.0.apk"><img src="https://img.shields.io/badge/Descargar_APK-v1.0.0-0B1221?style=for-the-badge&amp;logo=android&amp;logoColor=38BDF8" alt="Descargar APK v1.0.0" /></a>&nbsp;<img src="https://img.shields.io/badge/Android-8.0%2B_(API_26)-0B1221?style=for-the-badge&amp;logo=googleplay&amp;logoColor=A78BFA" alt="Android 8.0+" />&nbsp;<img src="https://img.shields.io/badge/Core-Rust_%2B_libSQL-0B1221?style=for-the-badge&amp;logo=rust&amp;logoColor=38BDF8" alt="Rust + libSQL" />&nbsp;<img src="https://img.shields.io/badge/UI-Material_3_Expressive-0B1221?style=for-the-badge&amp;logo=materialdesign&amp;logoColor=A78BFA" alt="Material 3 Expressive" />
+  <a href="https://github.com/Snowclik/AppAnotaciones/releases/latest/download/AppNotas-v2.5.1-debug.apk"><img src="https://img.shields.io/badge/Descargar_APK-v2.5.1-0B1221?style=for-the-badge&amp;logo=android&amp;logoColor=38BDF8" alt="Descargar APK v2.5.1" /></a>&nbsp;<img src="https://img.shields.io/badge/Android-8.0%2B_(API_26)-0B1221?style=for-the-badge&amp;logo=googleplay&amp;logoColor=A78BFA" alt="Android 8.0+" />&nbsp;<img src="https://img.shields.io/badge/Core-Rust_%2B_libSQL-0B1221?style=for-the-badge&amp;logo=rust&amp;logoColor=38BDF8" alt="Rust + libSQL" />&nbsp;<img src="https://img.shields.io/badge/UI-Material_3_Expressive-0B1221?style=for-the-badge&amp;logo=materialdesign&amp;logoColor=A78BFA" alt="Material 3 Expressive" />
 </p>
 
 <p align="center">
@@ -22,15 +22,15 @@
 Descarga e instala el APK directamente en tu teléfono Android (compatible con **Android 8.0+** en dispositivos `arm64-v8a` y emuladores `x86_64`):
 
 <p align="center">
-  <a href="https://github.com/Snowclik/AppAnotaciones/releases/latest/download/AppAnotaciones-v1.0.0.apk">
-    <img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_APPANOTACIONES_APK_(v1.0.0)-0B1221?style=for-the-badge&amp;logo=android&amp;logoColor=38BDF8" alt="Descargar AppAnotaciones APK" />
+  <a href="https://github.com/Snowclik/AppAnotaciones/releases/latest/download/AppNotas-v2.5.1-debug.apk">
+    <img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_APPNOTACIONES_APK_(v2.5.1)-0B1221?style=for-the-badge&amp;logo=android&amp;logoColor=38BDF8" alt="Descargar AppAnotaciones APK" />
   </a>
 </p>
 
 - **Todas las versiones:** [GitHub Releases](https://github.com/Snowclik/AppAnotaciones/releases)
 - **Instalación por USB (ADB):**
   ```powershell
-  adb install -r AppAnotaciones-v1.0.0.apk
+  adb install -r AppNotas-v2.5.1-debug.apk
   ```
 
 ---

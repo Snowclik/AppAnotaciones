@@ -18,7 +18,10 @@ default = []
 bindgen-cli = ["uniffi/cli"]
 
 [dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 libsql = "0.10.0"
+ring = "0.17"
+rust_xlsxwriter = "0.104"
 thiserror = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "sync", "macros", "time"] }
 uniffi = "0.32.2"

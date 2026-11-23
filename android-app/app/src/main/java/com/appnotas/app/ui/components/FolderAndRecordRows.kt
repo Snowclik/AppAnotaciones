@@ -7,6 +7,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -60,14 +63,13 @@ fun FolderRowCard(
     folder: FolderItem,
     onClick: () -> Unit,
     onEdit: () -> Unit,
+    onExport: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
     subtitleOverride: String? = null
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val tintColor = resolveFolderColor(folder.color, MaterialTheme.colorScheme.primary)
-    val iconVector = resolveFolderIcon(folder.icon)
     val interactionSource = remember { MutableInteractionSource() }
     val view = LocalView.current
 
@@ -90,6 +92,7 @@ fun FolderRowCard(
                     onClick()
                 },
             color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp,
             shape = shape
         ) {
             Row(
@@ -99,20 +102,13 @@ fun FolderRowCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(tintColor.copy(alpha = 0.14f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = iconVector,
-                        contentDescription = null,
-                        tint = tintColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                FolderAvatarBadge(
+                    iconValue = folder.icon,
+                    colorHex = folder.color,
+                    fallbackColor = MaterialTheme.colorScheme.primary,
+                    size = 48.dp,
+                    cornerRadius = 15.dp
+                )
 
                 Column(
                     modifier = Modifier.weight(1f),
@@ -175,6 +171,14 @@ fun FolderRowCard(
                             }
                         )
                         DropdownMenuItem(
+                            text = { Text("Exportar a Excel") },
+                            leadingIcon = { Icon(Icons.Rounded.TableChart, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                onExport()
+                            }
+                        )
+                        DropdownMenuItem(
                             text = { Text("Eliminar") },
                             leadingIcon = { Icon(Icons.Rounded.DeleteOutline, contentDescription = null) },
                             onClick = {
@@ -189,6 +193,7 @@ fun FolderRowCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RecordRowCard(
     record: RecordItem,
@@ -201,6 +206,12 @@ fun RecordRowCard(
     var menuExpanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val view = LocalView.current
+    val calculationBreakdown = formatCalculationBreakdown(
+        record.unit,
+        record.quantity,
+        record.unitMultiplier,
+        record.multiplierLabel
+    )
 
     SwipeActionRowContainer(
         shape = shape,
@@ -233,7 +244,7 @@ fun RecordRowCard(
                 Box(
                     modifier = Modifier
                         .size(42.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(13.dp))
                         .background(MaterialTheme.colorScheme.secondaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
@@ -247,7 +258,7 @@ fun RecordRowCard(
 
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = record.title,
@@ -274,21 +285,69 @@ fun RecordRowCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                    if (record.customFields.isNotEmpty()) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            record.customFields.take(4).forEach { field ->
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                                ) {
+                                    Text(
+                                        text = "${field.name}: ${field.value}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    )
+                                }
+                            }
+                            if (record.customFields.size > 4) {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                ) {
+                                    Text(
+                                        text = "+${record.customFields.size - 4}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 val numeric = record.numericValue
                 if (numeric != null) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(3.dp)
                     ) {
-                        Text(
-                            text = formatValueWithUnit(numeric, record.unit),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp)
-                        )
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.tertiaryContainer
+                        ) {
+                            Text(
+                                text = formatValueWithUnit(numeric, record.unit),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp)
+                            )
+                        }
+                        if (!calculationBreakdown.isNullOrBlank()) {
+                            Text(
+                                text = calculationBreakdown,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
 
@@ -350,6 +409,8 @@ private fun SwipeActionRowContainer(
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier.fillMaxWidth(),
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true,
         onDismiss = { direction ->
             when (direction) {
                 SwipeToDismissBoxValue.StartToEnd -> {

@@ -1,22 +1,38 @@
 package com.appnotas.app.data
 
 import com.appnotas.core.AppException
+import com.appnotas.core.AppearanceSettings
+import com.appnotas.core.CustomField
+import com.appnotas.core.ExportPeriod
+import com.appnotas.core.ExportPreview
+import com.appnotas.core.ExportResult
 import com.appnotas.core.FolderItem
 import com.appnotas.core.FolderViewData
+import com.appnotas.core.LockMode
 import com.appnotas.core.RecordItem
 import com.appnotas.core.SearchResults
+import com.appnotas.core.SecuritySettings
 import com.appnotas.core.SyncStatus
+import com.appnotas.core.clearAppPassword
 import com.appnotas.core.createFolder
 import com.appnotas.core.createRecord
 import com.appnotas.core.deleteFolder
 import com.appnotas.core.deleteRecord
+import com.appnotas.core.exportExcel
+import com.appnotas.core.getAppearanceSettings
+import com.appnotas.core.getSecuritySettings
 import com.appnotas.core.getSyncStatus
 import com.appnotas.core.initDb
 import com.appnotas.core.listFolderContents
+import com.appnotas.core.previewExcelExport
+import com.appnotas.core.saveAppearanceSettings
 import com.appnotas.core.searchAll
+import com.appnotas.core.setAppPassword
 import com.appnotas.core.syncNow
 import com.appnotas.core.updateFolder
 import com.appnotas.core.updateRecord
+import com.appnotas.core.updateSecurityOptions
+import com.appnotas.core.verifyAppPassword
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -72,20 +88,48 @@ class RustCoreRepository {
         folderId: String,
         title: String,
         numericValue: Double?,
+        quantity: Double?,
+        unitMultiplier: Double?,
+        multiplierLabel: String?,
         unit: String?,
-        textValue: String?
+        textValue: String?,
+        customFields: List<CustomField>
     ): RecordItem = withContext(Dispatchers.IO) {
-        createRecord(folderId, title, numericValue, unit, textValue)
+        createRecord(
+            folderId,
+            title,
+            numericValue,
+            quantity,
+            unitMultiplier,
+            multiplierLabel,
+            unit,
+            textValue,
+            customFields
+        )
     }
 
     suspend fun updateRecordItem(
         id: String,
         title: String,
         numericValue: Double?,
+        quantity: Double?,
+        unitMultiplier: Double?,
+        multiplierLabel: String?,
         unit: String?,
-        textValue: String?
+        textValue: String?,
+        customFields: List<CustomField>
     ): RecordItem = withContext(Dispatchers.IO) {
-        updateRecord(id, title, numericValue, unit, textValue)
+        updateRecord(
+            id,
+            title,
+            numericValue,
+            quantity,
+            unitMultiplier,
+            multiplierLabel,
+            unit,
+            textValue,
+            customFields
+        )
     }
 
     suspend fun deleteRecordItem(id: String) = withContext(Dispatchers.IO) {
@@ -95,6 +139,57 @@ class RustCoreRepository {
     suspend fun search(query: String): SearchResults = withContext(Dispatchers.IO) {
         searchAll(query)
     }
+
+    suspend fun previewExcel(
+        folderId: String?,
+        period: ExportPeriod
+    ): ExportPreview = withContext(Dispatchers.IO) {
+        previewExcelExport(folderId, period)
+    }
+
+    suspend fun exportToExcel(
+        folderId: String?,
+        period: ExportPeriod,
+        outputDir: String
+    ): ExportResult = withContext(Dispatchers.IO) {
+        exportExcel(folderId, period, outputDir)
+    }
+
+    suspend fun securitySettings(): SecuritySettings = withContext(Dispatchers.IO) {
+        getSecuritySettings()
+    }
+
+    suspend fun configureAppPassword(
+        password: String,
+        enableBiometric: Boolean
+    ): SecuritySettings = withContext(Dispatchers.IO) {
+        setAppPassword(password, enableBiometric)
+    }
+
+    suspend fun checkAppPassword(password: String): Boolean = withContext(Dispatchers.IO) {
+        verifyAppPassword(password)
+    }
+
+    suspend fun saveSecurityOptions(
+        lockMode: LockMode,
+        biometricEnabled: Boolean,
+        autoLockOnBackground: Boolean
+    ): SecuritySettings = withContext(Dispatchers.IO) {
+        updateSecurityOptions(lockMode, biometricEnabled, autoLockOnBackground)
+    }
+
+    suspend fun removeAppPassword(): SecuritySettings = withContext(Dispatchers.IO) {
+        clearAppPassword()
+    }
+
+    suspend fun appearanceSettings(): AppearanceSettings = withContext(Dispatchers.IO) {
+        getAppearanceSettings()
+    }
+
+    suspend fun updateAppearanceSettings(settings: AppearanceSettings): AppearanceSettings =
+        withContext(Dispatchers.IO) {
+            saveAppearanceSettings(settings)
+        }
 }
 
 fun Throwable.toReadableMessage(): String = when (this) {

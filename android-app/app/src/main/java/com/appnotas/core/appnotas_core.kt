@@ -674,6 +674,8 @@ internal object IntegrityCheckingUniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_appnotas_core_checksum_func_clear_app_password(
+    ): Int
     external fun uniffi_appnotas_core_checksum_func_create_folder(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_create_record(
@@ -682,19 +684,37 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_appnotas_core_checksum_func_delete_record(
     ): Int
+    external fun uniffi_appnotas_core_checksum_func_export_excel(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_get_appearance_settings(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_get_security_settings(
+    ): Int
     external fun uniffi_appnotas_core_checksum_func_get_sync_status(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_init_db(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_list_folder_contents(
     ): Int
+    external fun uniffi_appnotas_core_checksum_func_preview_excel_export(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_save_appearance_settings(
+    ): Int
     external fun uniffi_appnotas_core_checksum_func_search_all(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_set_app_password(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_suggest_folder_fields(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_sync_now(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_update_folder(
     ): Int
     external fun uniffi_appnotas_core_checksum_func_update_record(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_update_security_options(
+    ): Int
+    external fun uniffi_appnotas_core_checksum_func_verify_app_password(
     ): Int
     external fun ffi_appnotas_core_uniffi_contract_version(
     ): Int
@@ -711,28 +731,48 @@ internal object UniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_appnotas_core_fn_func_clear_app_password(uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_create_folder(`parentId`: RustBuffer.ByValue,`name`: RustBuffer.ByValue,`color`: RustBuffer.ByValue,`icon`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun uniffi_appnotas_core_fn_func_create_record(`folderId`: RustBuffer.ByValue,`title`: RustBuffer.ByValue,`numericValue`: RustBuffer.ByValue,`unit`: RustBuffer.ByValue,`textValue`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun uniffi_appnotas_core_fn_func_create_record(`folderId`: RustBuffer.ByValue,`title`: RustBuffer.ByValue,`numericValue`: RustBuffer.ByValue,`quantity`: RustBuffer.ByValue,`unitMultiplier`: RustBuffer.ByValue,`multiplierLabel`: RustBuffer.ByValue,`unit`: RustBuffer.ByValue,`textValue`: RustBuffer.ByValue,`customFields`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_delete_folder(`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_appnotas_core_fn_func_delete_record(`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_appnotas_core_fn_func_export_excel(`folderId`: RustBuffer.ByValue,`period`: RustBuffer.ByValue,`outputDir`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_get_appearance_settings(uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_get_security_settings(uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_get_sync_status(uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_init_db(`localPath`: RustBuffer.ByValue,`tursoUrl`: RustBuffer.ByValue,`tursoToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_list_folder_contents(`parentId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_preview_excel_export(`folderId`: RustBuffer.ByValue,`period`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_save_appearance_settings(`settings`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_search_all(`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_set_app_password(`password`: RustBuffer.ByValue,`enableBiometric`: Byte,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_suggest_folder_fields(`folderId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_sync_now(uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_appnotas_core_fn_func_update_folder(`id`: RustBuffer.ByValue,`name`: RustBuffer.ByValue,`color`: RustBuffer.ByValue,`icon`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun uniffi_appnotas_core_fn_func_update_record(`id`: RustBuffer.ByValue,`title`: RustBuffer.ByValue,`numericValue`: RustBuffer.ByValue,`unit`: RustBuffer.ByValue,`textValue`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun uniffi_appnotas_core_fn_func_update_record(`id`: RustBuffer.ByValue,`title`: RustBuffer.ByValue,`numericValue`: RustBuffer.ByValue,`quantity`: RustBuffer.ByValue,`unitMultiplier`: RustBuffer.ByValue,`multiplierLabel`: RustBuffer.ByValue,`unit`: RustBuffer.ByValue,`textValue`: RustBuffer.ByValue,`customFields`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_update_security_options(`lockMode`: RustBuffer.ByValue,`biometricEnabled`: Byte,`autoLockOnBackground`: Byte,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_appnotas_core_fn_func_verify_app_password(`password`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
     external fun ffi_appnotas_core_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun ffi_appnotas_core_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -852,16 +892,28 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
+    if ((lib.uniffi_appnotas_core_checksum_func_clear_app_password() and 0xFFFF) != 8770) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_appnotas_core_checksum_func_create_folder() and 0xFFFF) != 7638) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_appnotas_core_checksum_func_create_record() and 0xFFFF) != 40184) {
+    if ((lib.uniffi_appnotas_core_checksum_func_create_record() and 0xFFFF) != 52034) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_appnotas_core_checksum_func_delete_folder() and 0xFFFF) != 577) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_appnotas_core_checksum_func_delete_record() and 0xFFFF) != 35250) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_export_excel() and 0xFFFF) != 31755) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_get_appearance_settings() and 0xFFFF) != 56084) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_get_security_settings() and 0xFFFF) != 23964) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_appnotas_core_checksum_func_get_sync_status() and 0xFFFF) != 4904) {
@@ -873,7 +925,19 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_appnotas_core_checksum_func_list_folder_contents() and 0xFFFF) != 3427) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_appnotas_core_checksum_func_preview_excel_export() and 0xFFFF) != 52774) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_save_appearance_settings() and 0xFFFF) != 3760) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_appnotas_core_checksum_func_search_all() and 0xFFFF) != 57476) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_set_app_password() and 0xFFFF) != 44047) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_suggest_folder_fields() and 0xFFFF) != 33290) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_appnotas_core_checksum_func_sync_now() and 0xFFFF) != 62542) {
@@ -882,7 +946,13 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_appnotas_core_checksum_func_update_folder() and 0xFFFF) != 17085) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_appnotas_core_checksum_func_update_record() and 0xFFFF) != 60316) {
+    if ((lib.uniffi_appnotas_core_checksum_func_update_record() and 0xFFFF) != 56727) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_update_security_options() and 0xFFFF) != 22010) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_appnotas_core_checksum_func_verify_app_password() and 0xFFFF) != 11076) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1130,6 +1200,52 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
 
 
 /**
+ * Preferencias visuales 2026 persistidas localmente en `app_settings`.
+ */
+data class AppearanceSettings (
+    var `paletteId`: kotlin.String
+    , 
+    var `themeMode`: kotlin.String
+    , 
+    var `pureBlack`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAppearanceSettings: FfiConverterRustBuffer<AppearanceSettings> {
+    override fun read(buf: ByteBuffer): AppearanceSettings {
+        return AppearanceSettings(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AppearanceSettings) = (
+            FfiConverterString.allocationSize(value.`paletteId`) +
+            FfiConverterString.allocationSize(value.`themeMode`) +
+            FfiConverterBoolean.allocationSize(value.`pureBlack`)
+    )
+
+    override fun write(value: AppearanceSettings, buf: ByteBuffer) {
+            FfiConverterString.write(value.`paletteId`, buf)
+            FfiConverterString.write(value.`themeMode`, buf)
+            FfiConverterBoolean.write(value.`pureBlack`, buf)
+    }
+}
+
+
+
+/**
  * Elemento de navegación rápida en la barra de Breadcrumbs.
  */
 data class BreadcrumbItem (
@@ -1168,6 +1284,235 @@ public object FfiConverterTypeBreadcrumbItem: FfiConverterRustBuffer<BreadcrumbI
     override fun write(value: BreadcrumbItem, buf: ByteBuffer) {
             FfiConverterOptionalString.write(value.`id`, buf)
             FfiConverterString.write(value.`name`, buf)
+    }
+}
+
+
+
+/**
+ * Par clave/valor definido dinámicamente por el usuario para un registro.
+ */
+data class CustomField (
+    var `name`: kotlin.String
+    , 
+    var `value`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCustomField: FfiConverterRustBuffer<CustomField> {
+    override fun read(buf: ByteBuffer): CustomField {
+        return CustomField(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CustomField) = (
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`value`)
+    )
+
+    override fun write(value: CustomField, buf: ByteBuffer) {
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`value`, buf)
+    }
+}
+
+
+
+/**
+ * Resumen y vista previa de la hoja Excel generable según alcance y período.
+ */
+data class ExportPreview (
+    var `scopeLabel`: kotlin.String
+    , 
+    var `periodLabel`: kotlin.String
+    , 
+    var `recordCount`: kotlin.ULong
+    , 
+    var `folderCount`: kotlin.ULong
+    , 
+    var `numericSum`: kotlin.Double
+    , 
+    var `columns`: List<kotlin.String>
+    , 
+    var `sampleRows`: List<ExportPreviewRow>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeExportPreview: FfiConverterRustBuffer<ExportPreview> {
+    override fun read(buf: ByteBuffer): ExportPreview {
+        return ExportPreview(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterSequenceString.read(buf),
+            FfiConverterSequenceTypeExportPreviewRow.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ExportPreview) = (
+            FfiConverterString.allocationSize(value.`scopeLabel`) +
+            FfiConverterString.allocationSize(value.`periodLabel`) +
+            FfiConverterULong.allocationSize(value.`recordCount`) +
+            FfiConverterULong.allocationSize(value.`folderCount`) +
+            FfiConverterDouble.allocationSize(value.`numericSum`) +
+            FfiConverterSequenceString.allocationSize(value.`columns`) +
+            FfiConverterSequenceTypeExportPreviewRow.allocationSize(value.`sampleRows`)
+    )
+
+    override fun write(value: ExportPreview, buf: ByteBuffer) {
+            FfiConverterString.write(value.`scopeLabel`, buf)
+            FfiConverterString.write(value.`periodLabel`, buf)
+            FfiConverterULong.write(value.`recordCount`, buf)
+            FfiConverterULong.write(value.`folderCount`, buf)
+            FfiConverterDouble.write(value.`numericSum`, buf)
+            FfiConverterSequenceString.write(value.`columns`, buf)
+            FfiConverterSequenceTypeExportPreviewRow.write(value.`sampleRows`, buf)
+    }
+}
+
+
+
+/**
+ * Fila de muestra formateada para previsualizar el reporte Excel antes de exportarlo.
+ */
+data class ExportPreviewRow (
+    var `dateLabel`: kotlin.String
+    , 
+    var `folderPath`: kotlin.String
+    , 
+    var `title`: kotlin.String
+    , 
+    var `valueDisplay`: kotlin.String
+    , 
+    var `calculationDisplay`: kotlin.String?
+    , 
+    var `extraSummary`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeExportPreviewRow: FfiConverterRustBuffer<ExportPreviewRow> {
+    override fun read(buf: ByteBuffer): ExportPreviewRow {
+        return ExportPreviewRow(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ExportPreviewRow) = (
+            FfiConverterString.allocationSize(value.`dateLabel`) +
+            FfiConverterString.allocationSize(value.`folderPath`) +
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterString.allocationSize(value.`valueDisplay`) +
+            FfiConverterOptionalString.allocationSize(value.`calculationDisplay`) +
+            FfiConverterString.allocationSize(value.`extraSummary`)
+    )
+
+    override fun write(value: ExportPreviewRow, buf: ByteBuffer) {
+            FfiConverterString.write(value.`dateLabel`, buf)
+            FfiConverterString.write(value.`folderPath`, buf)
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterString.write(value.`valueDisplay`, buf)
+            FfiConverterOptionalString.write(value.`calculationDisplay`, buf)
+            FfiConverterString.write(value.`extraSummary`, buf)
+    }
+}
+
+
+
+/**
+ * Metadatos resultantes de una exportación `.xlsx` generada por Rust.
+ */
+data class ExportResult (
+    var `filePath`: kotlin.String
+    , 
+    var `fileName`: kotlin.String
+    , 
+    var `recordCount`: kotlin.ULong
+    , 
+    var `folderCount`: kotlin.ULong
+    , 
+    var `numericSum`: kotlin.Double
+    , 
+    var `periodLabel`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeExportResult: FfiConverterRustBuffer<ExportResult> {
+    override fun read(buf: ByteBuffer): ExportResult {
+        return ExportResult(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ExportResult) = (
+            FfiConverterString.allocationSize(value.`filePath`) +
+            FfiConverterString.allocationSize(value.`fileName`) +
+            FfiConverterULong.allocationSize(value.`recordCount`) +
+            FfiConverterULong.allocationSize(value.`folderCount`) +
+            FfiConverterDouble.allocationSize(value.`numericSum`) +
+            FfiConverterString.allocationSize(value.`periodLabel`)
+    )
+
+    override fun write(value: ExportResult, buf: ByteBuffer) {
+            FfiConverterString.write(value.`filePath`, buf)
+            FfiConverterString.write(value.`fileName`, buf)
+            FfiConverterULong.write(value.`recordCount`, buf)
+            FfiConverterULong.write(value.`folderCount`, buf)
+            FfiConverterDouble.write(value.`numericSum`, buf)
+            FfiConverterString.write(value.`periodLabel`, buf)
     }
 }
 
@@ -1347,9 +1692,17 @@ data class RecordItem (
     , 
     var `numericValue`: kotlin.Double?
     , 
+    var `quantity`: kotlin.Double?
+    , 
+    var `unitMultiplier`: kotlin.Double?
+    , 
+    var `multiplierLabel`: kotlin.String?
+    , 
     var `unit`: kotlin.String?
     , 
     var `textValue`: kotlin.String?
+    , 
+    var `customFields`: List<CustomField>
     , 
     var `createdAt`: kotlin.Long
     , 
@@ -1374,8 +1727,12 @@ public object FfiConverterTypeRecordItem: FfiConverterRustBuffer<RecordItem> {
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterOptionalDouble.read(buf),
+            FfiConverterOptionalDouble.read(buf),
+            FfiConverterOptionalDouble.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeCustomField.read(buf),
             FfiConverterLong.read(buf),
             FfiConverterLong.read(buf),
         )
@@ -1386,8 +1743,12 @@ public object FfiConverterTypeRecordItem: FfiConverterRustBuffer<RecordItem> {
             FfiConverterString.allocationSize(value.`folderId`) +
             FfiConverterString.allocationSize(value.`title`) +
             FfiConverterOptionalDouble.allocationSize(value.`numericValue`) +
+            FfiConverterOptionalDouble.allocationSize(value.`quantity`) +
+            FfiConverterOptionalDouble.allocationSize(value.`unitMultiplier`) +
+            FfiConverterOptionalString.allocationSize(value.`multiplierLabel`) +
             FfiConverterOptionalString.allocationSize(value.`unit`) +
             FfiConverterOptionalString.allocationSize(value.`textValue`) +
+            FfiConverterSequenceTypeCustomField.allocationSize(value.`customFields`) +
             FfiConverterLong.allocationSize(value.`createdAt`) +
             FfiConverterLong.allocationSize(value.`updatedAt`)
     )
@@ -1397,8 +1758,12 @@ public object FfiConverterTypeRecordItem: FfiConverterRustBuffer<RecordItem> {
             FfiConverterString.write(value.`folderId`, buf)
             FfiConverterString.write(value.`title`, buf)
             FfiConverterOptionalDouble.write(value.`numericValue`, buf)
+            FfiConverterOptionalDouble.write(value.`quantity`, buf)
+            FfiConverterOptionalDouble.write(value.`unitMultiplier`, buf)
+            FfiConverterOptionalString.write(value.`multiplierLabel`, buf)
             FfiConverterOptionalString.write(value.`unit`, buf)
             FfiConverterOptionalString.write(value.`textValue`, buf)
+            FfiConverterSequenceTypeCustomField.write(value.`customFields`, buf)
             FfiConverterLong.write(value.`createdAt`, buf)
             FfiConverterLong.write(value.`updatedAt`, buf)
     }
@@ -1549,6 +1914,57 @@ public object FfiConverterTypeSearchResults: FfiConverterRustBuffer<SearchResult
             FfiConverterULong.write(value.`totalMatches`, buf)
             FfiConverterDouble.write(value.`numericSum`, buf)
             FfiConverterBoolean.write(value.`hasNumericSummary`, buf)
+    }
+}
+
+
+
+/**
+ * Preferencias de seguridad persistidas localmente en `app_settings`.
+ */
+data class SecuritySettings (
+    var `lockMode`: LockMode
+    , 
+    var `hasPassword`: kotlin.Boolean
+    , 
+    var `biometricEnabled`: kotlin.Boolean
+    , 
+    var `autoLockOnBackground`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSecuritySettings: FfiConverterRustBuffer<SecuritySettings> {
+    override fun read(buf: ByteBuffer): SecuritySettings {
+        return SecuritySettings(
+            FfiConverterTypeLockMode.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SecuritySettings) = (
+            FfiConverterTypeLockMode.allocationSize(value.`lockMode`) +
+            FfiConverterBoolean.allocationSize(value.`hasPassword`) +
+            FfiConverterBoolean.allocationSize(value.`biometricEnabled`) +
+            FfiConverterBoolean.allocationSize(value.`autoLockOnBackground`)
+    )
+
+    override fun write(value: SecuritySettings, buf: ByteBuffer) {
+            FfiConverterTypeLockMode.write(value.`lockMode`, buf)
+            FfiConverterBoolean.write(value.`hasPassword`, buf)
+            FfiConverterBoolean.write(value.`biometricEnabled`, buf)
+            FfiConverterBoolean.write(value.`autoLockOnBackground`, buf)
     }
 }
 
@@ -1827,6 +2243,82 @@ public object FfiConverterTypeAppError : FfiConverterRustBuffer<AppException> {
 
 
 /**
+ * Rango temporal soportado para exportar reportes a Excel.
+ */
+
+enum class ExportPeriod {
+    
+    WEEK,
+    MONTH,
+    ALL;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeExportPeriod: FfiConverterRustBuffer<ExportPeriod> {
+    override fun read(buf: ByteBuffer) = try {
+        ExportPeriod.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: ExportPeriod) = 4UL
+
+    override fun write(value: ExportPeriod, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * Estrategia de bloqueo activa en la aplicación.
+ */
+
+enum class LockMode {
+    
+    NONE,
+    APP_PASSWORD,
+    DEVICE_BIOMETRIC;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeLockMode: FfiConverterRustBuffer<LockMode> {
+    override fun read(buf: ByteBuffer) = try {
+        LockMode.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: LockMode) = 4UL
+
+    override fun write(value: LockMode, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
  * Modo operativo de la base de datos local / réplica embebida.
  */
 
@@ -1996,6 +2488,34 @@ public object FfiConverterOptionalTypeFolderItem: FfiConverterRustBuffer<FolderI
 /**
  * @suppress
  */
+public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
+    override fun read(buf: ByteBuffer): List<kotlin.String> {
+        val len = buf.getInt()
+        return List<kotlin.String>(len) {
+            FfiConverterString.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<kotlin.String>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterString.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<kotlin.String>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterString.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeBreadcrumbItem: FfiConverterRustBuffer<List<BreadcrumbItem>> {
     override fun read(buf: ByteBuffer): List<BreadcrumbItem> {
         val len = buf.getInt()
@@ -2014,6 +2534,62 @@ public object FfiConverterSequenceTypeBreadcrumbItem: FfiConverterRustBuffer<Lis
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeBreadcrumbItem.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeCustomField: FfiConverterRustBuffer<List<CustomField>> {
+    override fun read(buf: ByteBuffer): List<CustomField> {
+        val len = buf.getInt()
+        return List<CustomField>(len) {
+            FfiConverterTypeCustomField.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<CustomField>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeCustomField.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<CustomField>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeCustomField.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeExportPreviewRow: FfiConverterRustBuffer<List<ExportPreviewRow>> {
+    override fun read(buf: ByteBuffer): List<ExportPreviewRow> {
+        val len = buf.getInt()
+        return List<ExportPreviewRow>(len) {
+            FfiConverterTypeExportPreviewRow.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ExportPreviewRow>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeExportPreviewRow.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ExportPreviewRow>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeExportPreviewRow.write(it, buf)
         }
     }
 }
@@ -2157,6 +2733,17 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
         }
     }
 }
+    @Throws(AppException::class) fun `clearAppPassword`(): SecuritySettings {
+            return FfiConverterTypeSecuritySettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_clear_app_password(
+    
+        _status)
+}
+    )
+    }
+    
+
     @Throws(AppException::class) fun `createFolder`(`parentId`: kotlin.String?, `name`: kotlin.String, `color`: kotlin.String?, `icon`: kotlin.String?): FolderItem {
             return FfiConverterTypeFolderItem.lift(
     uniffiRustCallWithError(AppException) { _status ->
@@ -2172,7 +2759,7 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
     }
     
 
-    @Throws(AppException::class) fun `createRecord`(`folderId`: kotlin.String, `title`: kotlin.String, `numericValue`: kotlin.Double?, `unit`: kotlin.String?, `textValue`: kotlin.String?): RecordItem {
+    @Throws(AppException::class) fun `createRecord`(`folderId`: kotlin.String, `title`: kotlin.String, `numericValue`: kotlin.Double?, `quantity`: kotlin.Double?, `unitMultiplier`: kotlin.Double?, `multiplierLabel`: kotlin.String?, `unit`: kotlin.String?, `textValue`: kotlin.String?, `customFields`: List<CustomField>): RecordItem {
             return FfiConverterTypeRecordItem.lift(
     uniffiRustCallWithError(AppException) { _status ->
     UniffiLib.uniffi_appnotas_core_fn_func_create_record(
@@ -2181,8 +2768,12 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
         FfiConverterString.lower(`folderId`),
         FfiConverterString.lower(`title`),
         FfiConverterOptionalDouble.lower(`numericValue`),
+        FfiConverterOptionalDouble.lower(`quantity`),
+        FfiConverterOptionalDouble.lower(`unitMultiplier`),
+        FfiConverterOptionalString.lower(`multiplierLabel`),
         FfiConverterOptionalString.lower(`unit`),
-        FfiConverterOptionalString.lower(`textValue`),_status)
+        FfiConverterOptionalString.lower(`textValue`),
+        FfiConverterSequenceTypeCustomField.lower(`customFields`),_status)
 }
     )
     }
@@ -2208,6 +2799,42 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
         FfiConverterString.lower(`id`),_status)
 }
     
+    
+
+    @Throws(AppException::class) fun `exportExcel`(`folderId`: kotlin.String?, `period`: ExportPeriod, `outputDir`: kotlin.String): ExportResult {
+            return FfiConverterTypeExportResult.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_export_excel(
+    
+        
+        FfiConverterOptionalString.lower(`folderId`),
+        FfiConverterTypeExportPeriod.lower(`period`),
+        FfiConverterString.lower(`outputDir`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `getAppearanceSettings`(): AppearanceSettings {
+            return FfiConverterTypeAppearanceSettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_get_appearance_settings(
+    
+        _status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `getSecuritySettings`(): SecuritySettings {
+            return FfiConverterTypeSecuritySettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_get_security_settings(
+    
+        _status)
+}
+    )
+    }
     
 
     @Throws(AppException::class) fun `getSyncStatus`(): SyncStatus {
@@ -2247,6 +2874,31 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
     }
     
 
+    @Throws(AppException::class) fun `previewExcelExport`(`folderId`: kotlin.String?, `period`: ExportPeriod): ExportPreview {
+            return FfiConverterTypeExportPreview.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_preview_excel_export(
+    
+        
+        FfiConverterOptionalString.lower(`folderId`),
+        FfiConverterTypeExportPeriod.lower(`period`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `saveAppearanceSettings`(`settings`: AppearanceSettings): AppearanceSettings {
+            return FfiConverterTypeAppearanceSettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_save_appearance_settings(
+    
+        
+        FfiConverterTypeAppearanceSettings.lower(`settings`),_status)
+}
+    )
+    }
+    
+
     @Throws(AppException::class) fun `searchAll`(`query`: kotlin.String): SearchResults {
             return FfiConverterTypeSearchResults.lift(
     uniffiRustCallWithError(AppException) { _status ->
@@ -2254,6 +2906,31 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
     
         
         FfiConverterString.lower(`query`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `setAppPassword`(`password`: kotlin.String, `enableBiometric`: kotlin.Boolean): SecuritySettings {
+            return FfiConverterTypeSecuritySettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_set_app_password(
+    
+        
+        FfiConverterString.lower(`password`),
+        FfiConverterBoolean.lower(`enableBiometric`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `suggestFolderFields`(`folderId`: kotlin.String?): List<kotlin.String> {
+            return FfiConverterSequenceString.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_suggest_folder_fields(
+    
+        
+        FfiConverterOptionalString.lower(`folderId`),_status)
 }
     )
     }
@@ -2285,7 +2962,7 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
     }
     
 
-    @Throws(AppException::class) fun `updateRecord`(`id`: kotlin.String, `title`: kotlin.String, `numericValue`: kotlin.Double?, `unit`: kotlin.String?, `textValue`: kotlin.String?): RecordItem {
+    @Throws(AppException::class) fun `updateRecord`(`id`: kotlin.String, `title`: kotlin.String, `numericValue`: kotlin.Double?, `quantity`: kotlin.Double?, `unitMultiplier`: kotlin.Double?, `multiplierLabel`: kotlin.String?, `unit`: kotlin.String?, `textValue`: kotlin.String?, `customFields`: List<CustomField>): RecordItem {
             return FfiConverterTypeRecordItem.lift(
     uniffiRustCallWithError(AppException) { _status ->
     UniffiLib.uniffi_appnotas_core_fn_func_update_record(
@@ -2294,8 +2971,38 @@ public object FfiConverterSequenceTypeUnitSubtotal: FfiConverterRustBuffer<List<
         FfiConverterString.lower(`id`),
         FfiConverterString.lower(`title`),
         FfiConverterOptionalDouble.lower(`numericValue`),
+        FfiConverterOptionalDouble.lower(`quantity`),
+        FfiConverterOptionalDouble.lower(`unitMultiplier`),
+        FfiConverterOptionalString.lower(`multiplierLabel`),
         FfiConverterOptionalString.lower(`unit`),
-        FfiConverterOptionalString.lower(`textValue`),_status)
+        FfiConverterOptionalString.lower(`textValue`),
+        FfiConverterSequenceTypeCustomField.lower(`customFields`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `updateSecurityOptions`(`lockMode`: LockMode, `biometricEnabled`: kotlin.Boolean, `autoLockOnBackground`: kotlin.Boolean): SecuritySettings {
+            return FfiConverterTypeSecuritySettings.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_update_security_options(
+    
+        
+        FfiConverterTypeLockMode.lower(`lockMode`),
+        FfiConverterBoolean.lower(`biometricEnabled`),
+        FfiConverterBoolean.lower(`autoLockOnBackground`),_status)
+}
+    )
+    }
+    
+
+    @Throws(AppException::class) fun `verifyAppPassword`(`password`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    uniffiRustCallWithError(AppException) { _status ->
+    UniffiLib.uniffi_appnotas_core_fn_func_verify_app_password(
+    
+        
+        FfiConverterString.lower(`password`),_status)
 }
     )
     }

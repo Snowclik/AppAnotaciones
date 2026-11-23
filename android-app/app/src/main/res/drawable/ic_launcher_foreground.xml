@@ -1,13 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Pestaña trasera estilo Bento en verde menta translúcido -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M34,34h16l5,6h19c2.2,0 4,1.8 4,4v26c0,2.2 -1.8,4 -4,4H34c-2.2,0 -4,-1.8 -4,-4V38c0,-2.2 1.8,-4 4,-4z" />
+        android:fillAlpha="0.55"
+        android:fillColor="#FF5EEAD4"
+        android:pathData="M31,31L49,31C51.2,31 53.1,32.2 54.1,34L55.8,37L73,37C76.3,37 79,39.7 79,43L79,68C79,71.3 76.3,74 73,74L31,74C27.7,74 25,71.3 25,68L25,37C25,33.7 27.7,31 31,31Z" />
+
+    <!-- Tarjeta principal luminosa -->
+    <path android:pathData="M33,39L75,39C79.4,39 83,42.6 83,47L83,71C83,75.4 79.4,79 75,79L33,79C28.6,79 25,75.4 25,71L25,47C25,42.6 28.6,39 33,39Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="83"
+                android:endY="79"
+                android:startX="25"
+                android:startY="39"
+                android:type="linear">
+                <item
+                    android:color="#FFFFFFFF"
+                    android:offset="0" />
+                <item
+                    android:color="#FFE6FFFA"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Barras de resumen numérico interior -->
     <path
-        android:fillColor="#1B5E20"
-        android:pathData="M40,51h28v4H40zM40,59h18v4H40z" />
+        android:fillColor="#FF0F766E"
+        android:pathData="M35,61h6v9h-6z" />
+    <path
+        android:fillColor="#FF14B8A6"
+        android:pathData="M45,55h6v15h-6z" />
+    <path
+        android:fillColor="#FF10B981"
+        android:pathData="M55,49h6v21h-6z" />
+
+    <!-- Insignia de registro / pulso -->
+    <path
+        android:fillColor="#FF0F766E"
+        android:pathData="M66,49h8v3.5h-8z" />
+    <path
+        android:fillAlpha="0.45"
+        android:fillColor="#FF0F766E"
+        android:pathData="M66,56h8v3h-8z" />
+    <path
+        android:fillAlpha="0.3"
+        android:fillColor="#FF0F766E"
+        android:pathData="M66,62.5h5.5v3h-5.5z" />
+
+    <!-- Destello superior derecho -->
+    <path
+        android:fillColor="#FFFBBF24"
+        android:pathData="M73,27L74.8,31.2L79,33L74.8,34.8L73,39L71.2,34.8L67,33L71.2,31.2Z" />
 </vector>

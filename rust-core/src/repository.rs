@@ -7,8 +7,8 @@ use uuid::Uuid;
 use crate::db::CoreEngine;
 use crate::error::AppError;
 use crate::models::{
-    BreadcrumbItem, FolderItem, FolderViewData, RecordItem, SearchFolderResult, SearchRecordResult,
-    SearchResults, UnitSubtotal,
+    BreadcrumbItem, CustomField, FolderItem, FolderViewData, RecordItem, SearchFolderResult,
+    SearchRecordResult, SearchResults, UnitSubtotal,
 };
 
 const FOLDER_SELECT_SQL: &str = "
@@ -25,14 +25,14 @@ const FOLDER_SELECT_SQL: &str = "
     FROM folders f
 ";
 
-fn now_epoch_ms() -> i64 {
+pub(crate) fn now_epoch_ms() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_millis() as i64)
         .unwrap_or(0)
 }
 
-fn normalize_required(value: &str, field_name: &str) -> Result<String, AppError> {
+pub(crate) fn normalize_required(value: &str, field_name: &str) -> Result<String, AppError> {
     let trimmed = value.trim();
     if trimmed.is_empty() {
         return Err(AppError::Validation {
@@ -42,7 +42,7 @@ fn normalize_required(value: &str, field_name: &str) -> Result<String, AppError>
     Ok(trimmed.to_string())
 }
 
-fn normalize_optional(value: Option<String>) -> Option<String> {
+pub(crate) fn normalize_optional(value: Option<String>) -> Option<String> {
     value.and_then(|raw| {
         let trimmed = raw.trim();
         if trimmed.is_empty() {
@@ -51,6 +51,32 @@ fn normalize_optional(value: Option<String>) -> Option<String> {
             Some(trimmed.to_string())
         }
     })
+}
+
+fn normalize_custom_fields(fields: Vec<CustomField>) -> Result<Vec<CustomField>, AppError> {
+    let mut normalized = Vec::with_capacity(fields.len());
+    for field in fields {
+        let name = field.name.trim();
+        let value = field.value.trim();
+        if name.is_empty() && value.is_empty() {
+            continue;
+        }
+        if name.is_empty() {
+            return Err(AppError::Validation {
+                detail: "Cada dato adicional debe tener un nombre de campo.".to_string(),
+            });
+        }
+        if value.is_empty() {
+            return Err(AppError::Validation {
+                detail: format!("Completa el valor para el campo adicional '{name}'."),
+            });
+        }
+        normalized.push(CustomField {
+            name: name.to_string(),
+            value: value.to_string(),
+        });
+    }
+    Ok(normalized)
 }
 
 fn validate_numeric(value: Option<f64>) -> Result<Option<f64>, AppError> {
@@ -62,6 +88,37 @@ fn validate_numeric(value: Option<f64>) -> Result<Option<f64>, AppError> {
         }
     }
     Ok(value)
+}
+
+type ResolvedCalculation = (Option<f64>, Option<f64>, Option<f64>, Option<String>);
+
+fn resolve_numeric_calculation(
+    numeric_value: Option<f64>,
+    quantity: Option<f64>,
+    unit_multiplier: Option<f64>,
+    multiplier_label: Option<String>,
+) -> Result<ResolvedCalculation, AppError> {
+    let valid_numeric = validate_numeric(numeric_value)?;
+    let valid_qty = validate_numeric(quantity)?;
+    let valid_mult = validate_numeric(unit_multiplier)?;
+    let clean_label = normalize_optional(multiplier_label);
+
+    match (valid_qty, valid_mult, valid_numeric) {
+        (Some(q), Some(m), _) => {
+            let product = q * m;
+            if !product.is_finite() {
+                return Err(AppError::Validation {
+                    detail: "El resultado del cálculo excede el rango numérico válido.".to_string(),
+                });
+            }
+            Ok((Some(product), Some(q), Some(m), clean_label))
+        }
+        (Some(q), None, Some(total)) => Ok((Some(total), Some(q), None, clean_label)),
+        (None, None, num) => Ok((num, None, None, None)),
+        _ => Err(AppError::Validation {
+            detail: "Completa cantidad y precio o cantidad y multiplicador válidos.".to_string(),
+        }),
+    }
 }
 
 fn escape_like_pattern(raw: &str) -> String {
@@ -78,7 +135,7 @@ fn escape_like_pattern(raw: &str) -> String {
     format!("%{escaped}%")
 }
 
-fn non_negative_count(value: i64) -> u64 {
+pub(crate) fn non_negative_count(value: i64) -> u64 {
     if value <= 0 {
         0
     } else {
@@ -100,20 +157,90 @@ fn row_to_folder(row: &libsql::Row) -> Result<FolderItem, AppError> {
     })
 }
 
-fn row_to_record(row: &libsql::Row) -> Result<RecordItem, AppError> {
+pub(crate) fn row_to_record(
+    row: &libsql::Row,
+    custom_fields: Vec<CustomField>,
+) -> Result<RecordItem, AppError> {
     Ok(RecordItem {
         id: row.get(0)?,
         folder_id: row.get(1)?,
         title: row.get(2)?,
         numeric_value: row.get(3)?,
-        unit: row.get(4)?,
-        text_value: row.get(5)?,
-        created_at: row.get(6)?,
-        updated_at: row.get(7)?,
+        quantity: row.get(4)?,
+        unit_multiplier: row.get(5)?,
+        multiplier_label: row.get(6)?,
+        unit: row.get(7)?,
+        text_value: row.get(8)?,
+        custom_fields,
+        created_at: row.get(9)?,
+        updated_at: row.get(10)?,
     })
 }
 
-async fn ensure_folder_exists(conn: &Connection, id: &str) -> Result<(), AppError> {
+pub(crate) async fn load_fields_for_records(
+    conn: &Connection,
+    record_ids: &[String],
+) -> Result<HashMap<String, Vec<CustomField>>, AppError> {
+    let mut map: HashMap<String, Vec<CustomField>> = HashMap::new();
+    if record_ids.is_empty() {
+        return Ok(map);
+    }
+
+    for chunk in record_ids.chunks(200) {
+        let placeholders = (1..=chunk.len())
+            .map(|idx| format!("?{idx}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let sql = format!(
+            "SELECT record_id, field_name, field_value
+             FROM record_fields
+             WHERE record_id IN ({placeholders})
+             ORDER BY sort_order ASC"
+        );
+        let mut rows = conn
+            .query(&sql, libsql::params_from_iter(chunk.iter().map(String::as_str)))
+            .await?;
+        while let Some(row) = rows.next().await? {
+            let record_id: String = row.get(0)?;
+            let name: String = row.get(1)?;
+            let value: String = row.get(2)?;
+            map.entry(record_id)
+                .or_default()
+                .push(CustomField { name, value });
+        }
+    }
+
+    Ok(map)
+}
+
+async fn replace_record_fields(
+    conn: &Connection,
+    record_id: &str,
+    fields: &[CustomField],
+) -> Result<(), AppError> {
+    conn.execute("DELETE FROM record_fields WHERE record_id = ?1", [record_id])
+        .await?;
+
+    for (idx, field) in fields.iter().enumerate() {
+        let field_id = Uuid::new_v4().to_string();
+        conn.execute(
+            "INSERT INTO record_fields (id, record_id, field_name, field_value, sort_order)
+             VALUES (?1, ?2, ?3, ?4, ?5)",
+            (
+                field_id.as_str(),
+                record_id,
+                field.name.as_str(),
+                field.value.as_str(),
+                idx as i64,
+            ),
+        )
+        .await?;
+    }
+
+    Ok(())
+}
+
+pub(crate) async fn ensure_folder_exists(conn: &Connection, id: &str) -> Result<(), AppError> {
     let mut rows = conn
         .query("SELECT 1 FROM folders WHERE id = ?1 LIMIT 1", [id])
         .await?;
@@ -139,7 +266,7 @@ async fn fetch_folder_by_id(conn: &Connection, id: &str) -> Result<FolderItem, A
 async fn fetch_record_by_id(conn: &Connection, id: &str) -> Result<RecordItem, AppError> {
     let mut rows = conn
         .query(
-            "SELECT id, folder_id, title, numeric_value, unit, text_value, created_at, updated_at
+            "SELECT id, folder_id, title, numeric_value, quantity, unit_multiplier, multiplier_label, unit, text_value, created_at, updated_at
              FROM records WHERE id = ?1 LIMIT 1",
             [id],
         )
@@ -148,7 +275,10 @@ async fn fetch_record_by_id(conn: &Connection, id: &str) -> Result<RecordItem, A
         entity: "registro".to_string(),
         id: id.to_string(),
     })?;
-    row_to_record(&row)
+    let id_str = id.to_string();
+    let mut fields_map = load_fields_for_records(conn, std::slice::from_ref(&id_str)).await?;
+    let fields = fields_map.remove(&id_str).unwrap_or_default();
+    row_to_record(&row, fields)
 }
 
 async fn build_breadcrumbs(
@@ -188,7 +318,7 @@ async fn build_breadcrumbs(
     Ok(breadcrumbs)
 }
 
-async fn load_folder_hierarchy_map(
+pub(crate) async fn load_folder_hierarchy_map(
     conn: &Connection,
 ) -> Result<HashMap<String, (Option<String>, String)>, AppError> {
     let mut rows = conn
@@ -204,7 +334,7 @@ async fn load_folder_hierarchy_map(
     Ok(map)
 }
 
-fn format_folder_path(
+pub(crate) fn format_folder_path(
     map: &HashMap<String, (Option<String>, String)>,
     folder_id: &str,
 ) -> String {
@@ -272,7 +402,7 @@ impl CoreEngine {
         if let Some(pid) = target_parent.as_deref() {
             let mut record_rows = conn
                 .query(
-                    "SELECT id, folder_id, title, numeric_value, unit, text_value, created_at, updated_at
+                    "SELECT id, folder_id, title, numeric_value, quantity, unit_multiplier, multiplier_label, unit, text_value, created_at, updated_at
                      FROM records
                      WHERE folder_id = ?1
                      ORDER BY updated_at DESC, created_at DESC",
@@ -280,7 +410,16 @@ impl CoreEngine {
                 )
                 .await?;
             while let Some(row) = record_rows.next().await? {
-                records.push(row_to_record(&row)?);
+                records.push(row_to_record(&row, Vec::new())?);
+            }
+            if !records.is_empty() {
+                let ids: Vec<String> = records.iter().map(|r| r.id.clone()).collect();
+                let mut fields_map = load_fields_for_records(&conn, &ids).await?;
+                for record in &mut records {
+                    if let Some(fields) = fields_map.remove(&record.id) {
+                        record.custom_fields = fields;
+                    }
+                }
             }
 
             let mut summary_rows = conn
@@ -425,20 +564,27 @@ impl CoreEngine {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn create_record(
         &self,
         folder_id: String,
         title: String,
         numeric_value: Option<f64>,
+        quantity: Option<f64>,
+        unit_multiplier: Option<f64>,
+        multiplier_label: Option<String>,
         unit: Option<String>,
         text_value: Option<String>,
+        custom_fields: Vec<CustomField>,
     ) -> Result<RecordItem, AppError> {
         let conn = self.connect().await?;
         let clean_folder_id = normalize_required(&folder_id, "folder_id")?;
         let clean_title = normalize_required(&title, "título")?;
-        let valid_numeric = validate_numeric(numeric_value)?;
+        let (effective_numeric, clean_qty, clean_mult, clean_mult_label) =
+            resolve_numeric_calculation(numeric_value, quantity, unit_multiplier, multiplier_label)?;
         let clean_unit = normalize_optional(unit);
         let clean_text = normalize_optional(text_value);
+        let clean_fields = normalize_custom_fields(custom_fields)?;
 
         ensure_folder_exists(&conn, &clean_folder_id).await?;
 
@@ -446,53 +592,68 @@ impl CoreEngine {
         let now = now_epoch_ms();
 
         conn.execute(
-            "INSERT INTO records (id, folder_id, title, numeric_value, unit, text_value, created_at, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
-            (
+            "INSERT INTO records (id, folder_id, title, numeric_value, quantity, unit_multiplier, multiplier_label, unit, text_value, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+            libsql::params![
                 id.as_str(),
                 clean_folder_id.as_str(),
                 clean_title.as_str(),
-                valid_numeric,
+                effective_numeric,
+                clean_qty,
+                clean_mult,
+                clean_mult_label.as_deref(),
                 clean_unit.as_deref(),
                 clean_text.as_deref(),
                 now,
-                now,
-            ),
+                now
+            ],
         )
         .await?;
+
+        replace_record_fields(&conn, &id, &clean_fields).await?;
 
         fetch_record_by_id(&conn, &id).await
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn update_record(
         &self,
         id: String,
         title: String,
         numeric_value: Option<f64>,
+        quantity: Option<f64>,
+        unit_multiplier: Option<f64>,
+        multiplier_label: Option<String>,
         unit: Option<String>,
         text_value: Option<String>,
+        custom_fields: Vec<CustomField>,
     ) -> Result<RecordItem, AppError> {
         let conn = self.connect().await?;
         let clean_id = normalize_required(&id, "id")?;
         let clean_title = normalize_required(&title, "título")?;
-        let valid_numeric = validate_numeric(numeric_value)?;
+        let (effective_numeric, clean_qty, clean_mult, clean_mult_label) =
+            resolve_numeric_calculation(numeric_value, quantity, unit_multiplier, multiplier_label)?;
         let clean_unit = normalize_optional(unit);
         let clean_text = normalize_optional(text_value);
+        let clean_fields = normalize_custom_fields(custom_fields)?;
         let now = now_epoch_ms();
 
         let affected = conn
             .execute(
                 "UPDATE records
-                 SET title = ?1, numeric_value = ?2, unit = ?3, text_value = ?4, updated_at = ?5
-                 WHERE id = ?6",
-                (
+                 SET title = ?1, numeric_value = ?2, quantity = ?3, unit_multiplier = ?4, multiplier_label = ?5, unit = ?6, text_value = ?7, updated_at = ?8
+                 WHERE id = ?9",
+                libsql::params![
                     clean_title.as_str(),
-                    valid_numeric,
+                    effective_numeric,
+                    clean_qty,
+                    clean_mult,
+                    clean_mult_label.as_deref(),
                     clean_unit.as_deref(),
                     clean_text.as_deref(),
                     now,
-                    clean_id.as_str(),
-                ),
+                    clean_id.as_str()
+                ],
             )
             .await?;
 
@@ -503,7 +664,65 @@ impl CoreEngine {
             });
         }
 
+        replace_record_fields(&conn, &clean_id, &clean_fields).await?;
+
         fetch_record_by_id(&conn, &clean_id).await
+    }
+
+    pub async fn suggest_folder_fields(
+        &self,
+        folder_id: Option<String>,
+    ) -> Result<Vec<String>, AppError> {
+        let conn = self.connect().await?;
+        let clean_folder = normalize_optional(folder_id);
+
+        let mut rows = if let Some(fid) = clean_folder {
+            let hierarchy_map = load_folder_hierarchy_map(&conn).await?;
+            let mut scope_root = fid;
+            for _ in 0..128 {
+                if let Some((Some(parent), _)) = hierarchy_map.get(&scope_root) {
+                    scope_root = parent.clone();
+                } else {
+                    break;
+                }
+            }
+            conn.query(
+                "WITH RECURSIVE subtree(id) AS (
+                    SELECT ?1
+                    UNION ALL
+                    SELECT f.id FROM folders f INNER JOIN subtree s ON f.parent_id = s.id
+                )
+                SELECT MIN(TRIM(rf.field_name)) AS display_name
+                FROM record_fields rf
+                INNER JOIN records r ON r.id = rf.record_id
+                INNER JOIN subtree s ON r.folder_id = s.id
+                GROUP BY LOWER(TRIM(rf.field_name))
+                ORDER BY COUNT(*) DESC, MAX(r.updated_at) DESC, MIN(rf.sort_order) ASC
+                LIMIT 8",
+                [scope_root.as_str()],
+            )
+            .await?
+        } else {
+            conn.query(
+                "SELECT MIN(TRIM(rf.field_name)) AS display_name
+                 FROM record_fields rf
+                 INNER JOIN records r ON r.id = rf.record_id
+                 GROUP BY LOWER(TRIM(rf.field_name))
+                 ORDER BY COUNT(*) DESC, MAX(r.updated_at) DESC, MIN(rf.sort_order) ASC
+                 LIMIT 8",
+                (),
+            )
+            .await?
+        };
+
+        let mut suggestions = Vec::new();
+        while let Some(row) = rows.next().await? {
+            let name: String = row.get(0)?;
+            if !name.is_empty() {
+                suggestions.push(name);
+            }
+        }
+        Ok(suggestions)
     }
 
     pub async fn delete_record(&self, id: String) -> Result<(), AppError> {
@@ -560,27 +779,48 @@ impl CoreEngine {
 
         let mut record_rows = conn
             .query(
-                "SELECT id, folder_id, title, numeric_value, unit, text_value, created_at, updated_at
+                "SELECT id, folder_id, title, numeric_value, quantity, unit_multiplier, multiplier_label, unit, text_value, created_at, updated_at
                  FROM records
                  WHERE title LIKE ?1 ESCAPE '\\'
                     OR COALESCE(text_value, '') LIKE ?1 ESCAPE '\\'
                     OR COALESCE(unit, '') LIKE ?1 ESCAPE '\\'
+                    OR COALESCE(multiplier_label, '') LIKE ?1 ESCAPE '\\'
+                    OR EXISTS (
+                        SELECT 1 FROM record_fields rf
+                        WHERE rf.record_id = records.id
+                          AND (rf.field_name LIKE ?1 ESCAPE '\\' OR rf.field_value LIKE ?1 ESCAPE '\\')
+                    )
                  ORDER BY updated_at DESC, created_at DESC
                  LIMIT 200",
                 [pattern.as_str()],
             )
             .await?;
 
-        let mut records = Vec::new();
+        let mut matched_records = Vec::new();
         let mut numeric_sum = 0.0f64;
         let mut numeric_matches = 0u64;
 
         while let Some(row) = record_rows.next().await? {
-            let record = row_to_record(&row)?;
+            let record = row_to_record(&row, Vec::new())?;
             if let Some(val) = record.numeric_value {
                 numeric_sum += val;
                 numeric_matches += 1;
             }
+            matched_records.push(record);
+        }
+
+        if !matched_records.is_empty() {
+            let ids: Vec<String> = matched_records.iter().map(|r| r.id.clone()).collect();
+            let mut fields_map = load_fields_for_records(&conn, &ids).await?;
+            for record in &mut matched_records {
+                if let Some(fields) = fields_map.remove(&record.id) {
+                    record.custom_fields = fields;
+                }
+            }
+        }
+
+        let mut records = Vec::with_capacity(matched_records.len());
+        for record in matched_records {
             let folder_name = hierarchy_map
                 .get(&record.folder_id)
                 .map(|(_, name)| name.clone())

@@ -1,10 +1,15 @@
 package com.appnotas.app.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,30 +58,29 @@ import kotlinx.coroutines.delay
 fun ExpressiveFabMenuOverlay(
     expanded: Boolean,
     visible: Boolean,
+    isInsideFolder: Boolean,
     onToggle: () -> Unit,
     onDismiss: () -> Unit,
     onCreateFolder: () -> Unit,
     onCreateRecord: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (!visible) return
-
     val view = LocalView.current
     val reducedMotion = rememberReducedMotion()
     val scrimAlpha by animateFloatAsState(
-        targetValue = if (expanded) 0.34f else 0f,
+        targetValue = if (expanded && visible) 0.34f else 0f,
         animationSpec = tween(durationMillis = if (reducedMotion) 80 else 180, easing = EmilEaseOut),
         label = "fabScrimAlpha"
     )
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (expanded || scrimAlpha > 0.01f) {
+        if ((expanded && visible) || scrimAlpha > 0.01f) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = scrimAlpha))
                     .then(
-                        if (expanded) {
+                        if (expanded && visible) {
                             Modifier.clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -90,52 +93,62 @@ fun ExpressiveFabMenuOverlay(
             )
         }
 
-        Column(
+        AnimatedVisibility(
+            visible = visible,
+            enter = if (reducedMotion) {
+                fadeIn(tween(80))
+            } else {
+                fadeIn(tween(180, easing = EmilEaseOut)) +
+                    scaleIn(tween(200, easing = EmilEaseOut), initialScale = 0.86f)
+            },
+            exit = if (reducedMotion) {
+                fadeOut(tween(80))
+            } else {
+                fadeOut(tween(140, easing = EmilEaseOut)) +
+                    scaleOut(tween(140, easing = EmilEaseOut), targetScale = 0.86f)
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(end = 16.dp, bottom = 16.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(end = 16.dp, bottom = 16.dp)
         ) {
-            ExpressiveFabActionPill(
-                visible = expanded,
-                enterDelayMs = 35,
-                icon = Icons.Rounded.CreateNewFolder,
-                label = "Nueva Carpeta",
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                reducedMotion = reducedMotion,
-                onClick = {
-                    performConfirmHaptic(view)
-                    onCreateFolder()
-                }
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ExpressiveFabActionPill(
+                    visible = expanded,
+                    enterDelayMs = 35,
+                    icon = Icons.AutoMirrored.Rounded.NoteAdd,
+                    label = "Nuevo Registro",
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    reducedMotion = reducedMotion,
+                    onClick = {
+                        performConfirmHaptic(view)
+                        onCreateRecord()
+                    }
+                )
 
-            ExpressiveFabActionPill(
-                visible = expanded,
-                enterDelayMs = 0,
-                icon = Icons.AutoMirrored.Rounded.NoteAdd,
-                label = "Nuevo Registro",
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                reducedMotion = reducedMotion,
-                onClick = {
-                    performConfirmHaptic(view)
-                    onCreateRecord()
-                }
-            )
+                ExpressiveFabActionPill(
+                    visible = expanded,
+                    enterDelayMs = 0,
+                    icon = Icons.Rounded.CreateNewFolder,
+                    label = if (isInsideFolder) "Nueva Subcarpeta" else "Nueva Carpeta",
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    reducedMotion = reducedMotion,
+                    onClick = {
+                        performConfirmHaptic(view)
+                        onCreateFolder()
+                    }
+                )
 
             val fabInteraction = remember { MutableInteractionSource() }
             val cornerRadius by animateDpAsState(
                 targetValue = if (expanded) 28.dp else 18.dp,
                 animationSpec = if (reducedMotion) tween(0) else AppExpressiveMotion.fastSpatialSpec(),
                 label = "fabCorner"
-            )
-            val iconRotation by animateFloatAsState(
-                targetValue = if (expanded) 45f else 0f,
-                animationSpec = if (reducedMotion) tween(0) else AppExpressiveMotion.fastSpatialSpec(),
-                label = "fabRotation"
             )
             val containerColor by animateColorAsState(
                 targetValue = if (expanded) {
@@ -180,14 +193,13 @@ fun ExpressiveFabMenuOverlay(
                     }
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .graphicsLayer { rotationZ = iconRotation }
+                    MorphPlusCloseIcon(
+                        isExpanded = expanded,
+                        tint = contentColor,
+                        size = 28.dp
                     )
                 }
+            }
             }
         }
     }

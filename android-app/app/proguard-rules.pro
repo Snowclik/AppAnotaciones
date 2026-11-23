@@ -5,3 +5,4 @@
 
 -keep class com.appnotas.core.** { *; }
 -keepclassmembers class com.appnotas.core.** { *; }
+-keep class androidx.biometric.** { *; }

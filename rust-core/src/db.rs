@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::path::Path;
 use std::sync::RwLock;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -31,10 +32,25 @@ const MIGRATIONS_SQL: &str = "
         updated_at INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS record_fields (
+        id TEXT PRIMARY KEY NOT NULL,
+        record_id TEXT NOT NULL,
+        field_name TEXT NOT NULL,
+        field_value TEXT NOT NULL,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (record_id) REFERENCES records(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS app_settings (
+        key TEXT PRIMARY KEY NOT NULL,
+        value TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_folders_parent_id ON folders(parent_id);
     CREATE INDEX IF NOT EXISTS idx_records_folder_id ON records(folder_id);
     CREATE INDEX IF NOT EXISTS idx_folders_name ON folders(name);
     CREATE INDEX IF NOT EXISTS idx_records_title ON records(title);
+    CREATE INDEX IF NOT EXISTS idx_record_fields_record_id ON record_fields(record_id);
 ";
 
 fn now_epoch_ms() -> i64 {
@@ -53,6 +69,28 @@ fn clean_opt(value: Option<String>) -> Option<String> {
             Some(trimmed.to_string())
         }
     })
+}
+
+async fn ensure_record_columns(conn: &Connection) -> Result<(), AppError> {
+    let mut rows = conn.query("PRAGMA table_info(records)", ()).await?;
+    let mut existing = HashSet::new();
+    while let Some(row) = rows.next().await? {
+        let name: String = row.get(1)?;
+        existing.insert(name);
+    }
+
+    for (column, sql_type) in [
+        ("quantity", "REAL"),
+        ("unit_multiplier", "REAL"),
+        ("multiplier_label", "TEXT"),
+    ] {
+        if !existing.contains(column) {
+            let ddl = format!("ALTER TABLE records ADD COLUMN {column} {sql_type};");
+            conn.execute(&ddl, ()).await?;
+        }
+    }
+
+    Ok(())
 }
 
 pub struct CoreEngine {
@@ -162,6 +200,7 @@ impl CoreEngine {
     async fn run_migrations(&self) -> Result<(), AppError> {
         let conn = self.connect().await?;
         conn.execute_batch(MIGRATIONS_SQL).await?;
+        ensure_record_columns(&conn).await?;
         Ok(())
     }
 

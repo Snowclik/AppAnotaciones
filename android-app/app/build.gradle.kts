@@ -19,6 +19,8 @@ fun String?.toBuildConfigLiteral(): String {
     return "\"$escaped\""
 }
 
+val appVersionName = "2.5.1"
+
 android {
     namespace = "com.appnotas.app"
     compileSdk = 35
@@ -27,8 +29,8 @@ android {
         applicationId = "com.appnotas.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 8
+        versionName = appVersionName
 
         val tursoUrl = localProperties.getProperty("TURSO_DATABASE_URL").toBuildConfigLiteral()
         val tursoToken = localProperties.getProperty("TURSO_AUTH_TOKEN").toBuildConfigLiteral()
@@ -72,22 +74,23 @@ android {
     }
 }
 
+base {
+    archivesName.set("AppNotas-v$appVersionName")
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.google.material)
+    implementation(libs.androidx.biometric)
     implementation("net.java.dev.jna:jna:5.17.0@aar")
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
 }
